@@ -162,7 +162,7 @@ public class CubeList
         }
         else
         {
-            Cube before = get_cube(index);
+            Cube before = get_cube(index-1);
             Cube tmp = before.next;
             before.next = tmp.next;
             tmp.next = null;

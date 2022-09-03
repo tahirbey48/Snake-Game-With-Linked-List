@@ -49,7 +49,8 @@ public class Main : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            pop_firstgameobject(cubeList);
+
+            delete_gameobject(cubeList, 5);
 
 
         }
@@ -163,6 +164,12 @@ public class Main : MonoBehaviour
     {
         Destroy(list.head.body);
         list.pop_first_cube();
+    }
+
+    public void delete_gameobject(CubeList list, int ind)
+    {
+        Destroy(list.get_cube(ind).body);
+        list.remove_cube(ind);
     }
 
 
