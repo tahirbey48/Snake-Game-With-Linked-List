@@ -49,9 +49,9 @@ public class Main : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            //cubeList.print_cubes();
-            cubeList.pop_cube();
-            Destroy(cubeList.tail.body);
+            pop_firstgameobject(cubeList);
+
+
         }
 
         if (Input.GetKey("s"))
@@ -208,29 +208,18 @@ public class Main : MonoBehaviour
 
 
 
-    public void pop_cube(CubeList cubelist)
+    public void pop_gameobject(CubeList list)
     {
-        if (cubelist.length == 0)
-            return;
-        else if (cubelist.length == 1)
-        {
-            cubelist.head = null;
-            cubelist.tail = null;
-        }
-        else
-        {
-            Cube tmp = cubelist.head;
-            while (tmp.next != cubelist.tail)
-            {
-                tmp = tmp.next;
-            }
-            tmp.next = null;
-            cubelist.tail = tmp;
-        }
-        cubelist.length--;
-
+        Destroy(list.tail.body);
+        list.pop_cube();
     }
 
+
+    public void pop_firstgameobject(CubeList list)
+    {
+        Destroy(list.head.body);
+        list.pop_first_cube();
+    }
 
 
 }
