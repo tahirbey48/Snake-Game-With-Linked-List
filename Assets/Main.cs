@@ -19,7 +19,7 @@ public class Main : MonoBehaviour
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube.transform.localPosition = new Vector3(0, 1, 0);
         //cube.transform.localScale = new Vector3(1, 1, 1);
-        cube.GetComponent<MeshRenderer>().material.color = Color.red;
+        //cube.GetComponent<MeshRenderer>().material.color = Color.red;
         cubeList = new CubeList(0, cube);
         //cubeList.append_cubes(0,cube);
 
@@ -137,68 +137,12 @@ public class Main : MonoBehaviour
         //    cubeList.pop_cube();
         //    Destroy(cubeList.tail.body);
         //}
-
-
-
-
-
+        refreshColor(cubeList);
     }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //static Text CreateText(GameObject cube)
-    //{
-    //    cube.transform.parent = cube.parent;
-    //    go.transform.parent = parent;
-    //    var text = go.AddComponent<Text>();
-    //    return text;
-    //}
-
-
-
-    //private GameObject addNewCube(int value, int i)
-    //{
-
-
-    //    GameObject newcube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-    //    newcube.transform.localPosition = new Vector3(0, 2 * i, 0);
-    //    newcube.transform.localScale = new Vector3(1, 1, 1);
-    //    newcube.AddComponent<Cube>();
-    //    newcube.GetComponent<Cube>().value = value;
-    //    newcube.GetComponent<Cube>().next = null;
-    //    cubeList.append_cubes(value);
-    //    cubeList.print_cubes();
-    //    return newcube;
-
-
-    //}
-
-
-
-
+    //This code will be used for movement and animations if necessary.
     //cube.transform.DOMove(border1.transform.position, 1).OnComplete(
     //           () =>
     //           {
@@ -222,4 +166,15 @@ public class Main : MonoBehaviour
     }
 
 
+    public void refreshColor(CubeList list)
+    {
+        Cube tmp = list.head;
+        while (tmp.next != null)
+        {
+            tmp.body.GetComponent<MeshRenderer>().material.color = Color.white;
+            list.head.body.GetComponent<MeshRenderer>().material.color = Color.green;
+            list.tail.body.GetComponent<MeshRenderer>().material.color = Color.blue;
+            tmp = tmp.next;
+        }
+    }
 }
