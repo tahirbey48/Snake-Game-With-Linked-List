@@ -1,0 +1,2 @@
+# Snake-Game-With-Linked-List
+This repository includes my own implementation on Linked List on a snake game. I have started this project to visualize algorithms and data structures, later realized that implementing a data structure and giving them a body as GameObjects are different challenges. Therefore I decided to start my journey with a 3D snake game, even though 3D snake game will be meaningless at some extend :) . Hope I will be able to finish the project and you enjoy. 
