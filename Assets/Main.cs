@@ -8,36 +8,89 @@ using static UnityEngine.GraphicsBuffer;
 public class Main : MonoBehaviour
 {
 
-
+    public static Main instance;
     private CubeList cubeList;
     [SerializeField] float speed = 10;
     [SerializeField] GameObject headCube;
     private Vector3 moveDirection = Vector3.forward;
+    public bool cubeOnStage;
+    public int value;
 
-    int i = 0;
     private void Awake()
     {
         cubeList = new CubeList(0, headCube);
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
+
+
+   
     void Start()
     {
-
+        cubeOnStage = false;
     }
 
     void Update()
     {
 
         MoveHeadOfLinkedList();
-        AppendCubes();
+        //AppendCubes();
         TranslationMethodForTail();
+
+        if (!cubeOnStage)
+        {
+            float Xrandom = Random.Range(-13, 13);
+            float Zrandom = Random.Range(-13, 13);
+            GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //randomCube.AddComponent<MeshRenderer>();
+            randomCube.AddComponent<BoxCollider>();
+            randomCube.AddComponent<Rigidbody>();
+            randomCube.AddComponent<HitDetector>();
+            GameObject myText = new GameObject();
+            myText.transform.SetParent(randomCube.transform);
+            myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
+            TextMesh textMesh = myText.AddComponent<TextMesh>();
+            value = Random.Range(0, 50);
+            textMesh.text = value.ToString();
+            textMesh.fontSize = 30;
+            textMesh.color = Color.black;
+            randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
+            cubeOnStage=true;
+        }
+
 
 
     }
 
-    private void AppendCubes()
+
+    public void AppendCubesWithHit(int value)
     {
-        if (Input.GetKeyDown("c"))
-        {
+        //if (Input.GetKeyDown("c"))
+        //{
+
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject myText = new GameObject();
+        cube.transform.position = cubeList.tail.body.transform.position;
+        cubeList.append_cube(value, cube);
+        myText.transform.SetParent(cube.transform);
+        myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
+        TextMesh textMesh = myText.AddComponent<TextMesh>();
+        textMesh.text = value.ToString();
+        textMesh.fontSize = 10;
+        textMesh.color = Color.black;
+        //}
+    }
+
+
+    public void AppendCubes()
+    {
+        //if (Input.GetKeyDown("c"))
+        //{
 
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             GameObject myText = new GameObject();
@@ -48,7 +101,7 @@ public class Main : MonoBehaviour
             TextMesh textMesh = myText.AddComponent<TextMesh>();
             textMesh.text = 3.ToString();
             textMesh.color = Color.black;
-        }
+        //}
     }
 
     private void MoveHeadOfLinkedList()

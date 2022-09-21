@@ -9,7 +9,6 @@ public class DetectHit : MonoBehaviour
         if (collision.gameObject.tag == "Head")
         {
             Debug.Log("Hit Detected .... ");
-
         }
     }
 }
