@@ -1582,6 +1582,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   headCube: {fileID: 0}
+  cubeOnStage: 0
+  value: 0
 --- !u!4 &2083254350
 Transform:
   m_ObjectHideFlags: 0
@@ -1627,6 +1629,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.1
   headCube: {fileID: 1588432777}
+  cubeOnStage: 0
+  value: 0
 --- !u!4 &2126851060
 Transform:
   m_ObjectHideFlags: 0

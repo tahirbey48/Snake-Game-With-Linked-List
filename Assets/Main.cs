@@ -47,9 +47,7 @@ public class Main : MonoBehaviour
             float Xrandom = Random.Range(-13, 13);
             float Zrandom = Random.Range(-13, 13);
             GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //randomCube.AddComponent<MeshRenderer>();
-            randomCube.AddComponent<BoxCollider>();
-            randomCube.AddComponent<Rigidbody>();
+            //randomCube.AddComponent<MeshCollider>();
             randomCube.AddComponent<HitDetector>();
             GameObject myText = new GameObject();
             myText.transform.SetParent(randomCube.transform);
@@ -60,7 +58,7 @@ public class Main : MonoBehaviour
             textMesh.fontSize = 30;
             textMesh.color = Color.black;
             randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
-            cubeOnStage=true;
+            cubeOnStage =true;
         }
 
 

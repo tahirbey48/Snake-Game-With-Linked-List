@@ -1,39 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class HitDetector : MonoBehaviour
+public class HitDetectorHead : MonoBehaviour
 {
     public static Main instance;
-
-
-
     // Start is called before the first frame update
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log("Event verildi");
-        if (collision.gameObject.tag == "Head")
+        if (collision.gameObject.tag == "Cube")
+        //if (collision.gameObject.GetComponent<MeshFilter>().mesh.name == "Cube Instance")
         {
             //int value = Random.Range(0, 50);
-            Destroy(this.gameObject);
+            Destroy(collision.gameObject);
             //Main.instance.AppendCubes();
             Main.instance.AppendCubesWithHit(Main.instance.value);
             Main.instance.cubeOnStage = false;
-            StartCoroutine(WaitAfterCollision(3));
         }
-        
     }
-
-
-    IEnumerator WaitAfterCollision(float waitTime)
-    {
-
-        yield return new WaitForSeconds(waitTime);
-    }
-
 }
-
-
-
-
