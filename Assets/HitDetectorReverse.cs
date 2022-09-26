@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class HitDetector : MonoBehaviour
+public class HitDetectorReverse : MonoBehaviour
 {
 
 
@@ -19,20 +19,16 @@ public class HitDetector : MonoBehaviour
             //Main.instance.AppendCubes();
             Main.instance.AppendCubesWithHit(Main.instance.value);
             Main.instance.cubeOnStage = false;
-            //StartCoroutine(WaitAfterCollision(3));
+            StartCoroutine(WaitAfterCollision(3));
         }
-        
+
     }
 
 
-    //IEnumerator WaitAfterCollision(float waitTime)
-    //{
+    IEnumerator WaitAfterCollision(float waitTime)
+    {
 
-    //    yield return new WaitForSeconds(waitTime);
-    //}
+        yield return new WaitForSeconds(waitTime);
+    }
 
 }
-
-
-
-

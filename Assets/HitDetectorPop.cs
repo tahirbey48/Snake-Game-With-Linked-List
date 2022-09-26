@@ -1,13 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class HitDetector : MonoBehaviour
+public class HitDetectorPop : MonoBehaviour
 {
-
-
-
     // Start is called before the first frame update
     private void OnCollisionEnter(Collision collision)
     {
@@ -17,11 +13,11 @@ public class HitDetector : MonoBehaviour
             //int value = Random.Range(0, 50);
             Destroy(this.gameObject);
             //Main.instance.AppendCubes();
-            Main.instance.AppendCubesWithHit(Main.instance.value);
-            Main.instance.cubeOnStage = false;
+            Main.instance.pop_gameobject(Main.instance.cubeList);
+            Main.instance.popOnStage--;
             //StartCoroutine(WaitAfterCollision(3));
         }
-        
+
     }
 
 
@@ -30,9 +26,4 @@ public class HitDetector : MonoBehaviour
 
     //    yield return new WaitForSeconds(waitTime);
     //}
-
 }
-
-
-
-

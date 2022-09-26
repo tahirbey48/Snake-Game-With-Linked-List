@@ -9,13 +9,14 @@ public class Main : MonoBehaviour
 {
 
     public static Main instance;
-    private CubeList cubeList;
+    public CubeList cubeList;
     [SerializeField] float speed = 10;
     [SerializeField] GameObject headCube;
     private Vector3 moveDirection = Vector3.forward;
     public bool cubeOnStage;
     public int value;
-
+    public float timeRemaining = 10;
+    public int popOnStage = 0;
     private void Awake()
     {
         cubeList = new CubeList(0, headCube);
@@ -37,6 +38,52 @@ public class Main : MonoBehaviour
 
     void Update()
     {
+        if (timeRemaining > 0)
+        {
+            timeRemaining -= Time.deltaTime;
+        } else
+        {
+            timeRemaining = 10;
+            float Xrandom = Random.Range(-13, 13);
+            float Zrandom = Random.Range(-13, 13);
+            GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            randomCube.AddComponent<MeshRenderer>();
+            randomCube.GetComponent<MeshRenderer>().material.color = Color.blue;
+            //randomCube.AddComponent<MeshCollider>();
+            randomCube.AddComponent<HitDetectorReverse>();
+            GameObject myText = new GameObject();
+            myText.transform.SetParent(randomCube.transform);
+            myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
+            TextMesh textMesh = myText.AddComponent<TextMesh>();
+            value = Random.Range(0, 50);
+            textMesh.text = "Reverse";
+            textMesh.fontSize = 30;
+            textMesh.color = Color.black;
+            randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
+            cubeOnStage = true;
+
+        }
+
+
+        if (popOnStage <= 3)
+        {
+            float Xrandom = Random.Range(-13, 13);
+            float Zrandom = Random.Range(-13, 13);
+            GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            randomCube.AddComponent<MeshRenderer>();
+            randomCube.GetComponent<MeshRenderer>().material.color = Color.yellow;
+            //randomCube.AddComponent<MeshCollider>();
+            randomCube.AddComponent<HitDetectorPop>();
+            GameObject myText = new GameObject();
+            myText.transform.SetParent(randomCube.transform);
+            myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
+            TextMesh textMesh = myText.AddComponent<TextMesh>();
+            textMesh.text = "POP";
+            textMesh.fontSize = 20;
+            textMesh.color = Color.black;
+            randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
+            popOnStage++;
+        }
 
         MoveHeadOfLinkedList();
         //AppendCubes();
@@ -176,4 +223,6 @@ public class Main : MonoBehaviour
             tmp = tmp.next;
         }
     }
+
+
 }
