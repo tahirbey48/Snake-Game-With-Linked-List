@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
@@ -9,6 +10,7 @@ public class Main : MonoBehaviour
 {
 
     public static Main instance;
+    public GameObject cameraTarget;
     public CubeList cubeList;
     [SerializeField] float speed = 10;
     [SerializeField] GameObject headCube;
@@ -17,8 +19,25 @@ public class Main : MonoBehaviour
     public int value;
     public float timeRemaining = 10;
     public int popOnStage = 0;
+    //public Vector3[] cameraPositions = new Vector3[] {new Vector3(0,2,-2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0) };
+    public Vector3 cameraPosition;
+    public LinkedList<Vector3> myCameraPositions;
+    public LinkedListNode<Vector3> tmp;
+    public CircularDoublyLinkedList circularCameraLocalPositions;
+    DNode tmpCamera;
+    private int t;
     private void Awake()
     {
+        t = 1;
+
+
+        circularCameraLocalPositions = new CircularDoublyLinkedList(new Vector3(-2, 2, 0));
+        circularCameraLocalPositions.AppendFromHead(new Vector3(0, 2, 2));
+        circularCameraLocalPositions.AppendFromHead(new Vector3(2, 2, 0));
+        circularCameraLocalPositions.AppendFromHead(new Vector3(0, 2, -2));
+
+        tmpCamera = circularCameraLocalPositions.head;
+        Debug.Log("At Awake *****" + tmpCamera.vector3D.x + " " + tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
         cubeList = new CubeList(0, headCube);
         if (instance != null)
         {
@@ -70,7 +89,7 @@ public class Main : MonoBehaviour
             float Xrandom = Random.Range(-13, 13);
             float Zrandom = Random.Range(-13, 13);
             GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            randomCube.AddComponent<MeshRenderer>();
+            //randomCube.AddComponent<MeshRenderer>();
             randomCube.GetComponent<MeshRenderer>().material.color = Color.yellow;
             //randomCube.AddComponent<MeshCollider>();
             randomCube.AddComponent<HitDetectorPop>();
@@ -155,10 +174,18 @@ public class Main : MonoBehaviour
 
         if (Input.GetKeyDown("a"))
         {
+            
             float a = moveDirection.x;
             float b = moveDirection.y;
             float c = moveDirection.z;
             moveDirection = new Vector3(-c, b, a);
+            //cameraTarget.transform.RotateAround(cubeList.head.body.transform.position, Vector3.Cross(moveDirection,Vector3.right),-90);
+            //Debug.DrawRay(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), Color.green,100);
+            tmpCamera = tmpCamera.next;
+            Debug.Log("*****" + tmpCamera.vector3D.x + " " + tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
+            cameraTarget.transform.localPosition = tmpCamera.vector3D;
+            //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[t]);
+            t++;
         }
 
         if (Input.GetKeyDown("d"))
@@ -167,6 +194,13 @@ public class Main : MonoBehaviour
             float b = moveDirection.y;
             float c = moveDirection.z;
             moveDirection = new Vector3(c, b, -a);
+            tmpCamera = tmpCamera.prev;
+            Debug.Log("*****" + tmpCamera.vector3D.x + " "+ tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
+            cameraTarget.transform.localPosition = tmpCamera.vector3D;
+            //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[jj]);
+            t--;
+            //cameraTarget.transform.RotateAround(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), 90);
+
         }
     }
 
@@ -223,6 +257,25 @@ public class Main : MonoBehaviour
             tmp = tmp.next;
         }
     }
+
+
+
+
+    public CubeList reverseList(CubeList list)
+    {
+        Cube before = null;
+        Cube tmp = list.head;
+        reverseWRecursion_helper(tmp, before);
+        return list;
+    }
+    public Cube reverseWRecursion_helper(Cube node_tmp, Cube node_before)
+    {
+        if (node_tmp == null)
+            return node_before;
+        Cube after = node_tmp.next;
+        return reverseWRecursion_helper(after, node_tmp);
+    }
+
 
 
 }

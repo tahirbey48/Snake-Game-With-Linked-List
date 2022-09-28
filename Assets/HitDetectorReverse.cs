@@ -14,21 +14,12 @@ public class HitDetectorReverse : MonoBehaviour
         Debug.Log("Event verildi");
         if (collision.gameObject.tag == "Head")
         {
-            //int value = Random.Range(0, 50);
             Destroy(this.gameObject);
-            //Main.instance.AppendCubes();
-            Main.instance.AppendCubesWithHit(Main.instance.value);
-            Main.instance.cubeOnStage = false;
-            StartCoroutine(WaitAfterCollision(3));
+            Main.instance.reverseList(Main.instance.cubeList);
         }
 
     }
 
 
-    IEnumerator WaitAfterCollision(float waitTime)
-    {
-
-        yield return new WaitForSeconds(waitTime);
-    }
 
 }

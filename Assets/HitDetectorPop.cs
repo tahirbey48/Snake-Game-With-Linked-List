@@ -7,7 +7,7 @@ public class HitDetectorPop : MonoBehaviour
     // Start is called before the first frame update
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Event verildi");
+        //Debug.Log("Event verildi");
         if (collision.gameObject.tag == "Head")
         {
             //int value = Random.Range(0, 50);
