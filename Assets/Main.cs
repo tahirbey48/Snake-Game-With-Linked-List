@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -26,6 +27,8 @@ public class Main : MonoBehaviour
     public CircularDoublyLinkedList circularCameraLocalPositions;
     DNode tmpCamera;
     private int t;
+    public GameObject transfornCamera;
+    public Camera cam2;
     private void Awake()
     {
         t = 1;
@@ -183,7 +186,11 @@ public class Main : MonoBehaviour
             //Debug.DrawRay(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), Color.green,100);
             tmpCamera = tmpCamera.next;
             Debug.Log("*****" + tmpCamera.vector3D.x + " " + tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
-            cameraTarget.transform.localPosition = tmpCamera.vector3D;
+            //cameraTarget.transform.localPosition = tmpCamera.vector3D;
+            cameraTarget.transform.DOLocalMove(tmpCamera.vector3D,1);
+            transfornCamera.transform.DOLookAt(moveDirection, 1);
+            //transfornCamera.transform.rotation = Quaternion.LookRotation(moveDirection);
+
             //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[t]);
             t++;
         }
@@ -196,12 +203,28 @@ public class Main : MonoBehaviour
             moveDirection = new Vector3(c, b, -a);
             tmpCamera = tmpCamera.prev;
             Debug.Log("*****" + tmpCamera.vector3D.x + " "+ tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
-            cameraTarget.transform.localPosition = tmpCamera.vector3D;
+            //cameraTarget.transform.localPosition = tmpCamera.vector3D;
+            cameraTarget.transform.DOLocalMove(tmpCamera.vector3D, 1);
+            transfornCamera.transform.DOLookAt(moveDirection, 1);
+            //transfornCamera.transform.rotation = Quaternion.LookRotation(moveDirection);
             //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[jj]);
             t--;
             //cameraTarget.transform.RotateAround(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), 90);
 
         }
+
+
+
+        if (Input.GetKey("l"))
+        {
+            cam2.depth = 4;
+        } else
+        {
+            cam2.depth = 2;
+        }
+       
+
+
     }
 
     private void TranslationMethodForTail()
