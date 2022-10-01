@@ -10,44 +10,61 @@ using static UnityEngine.GraphicsBuffer;
 public class Main : MonoBehaviour
 {
 
+    
+  
+
     public static Main instance;
-    public GameObject cameraTarget;
+
+
+    
     public CubeList cubeList;
-    [SerializeField] float speed = 10;
+    
     [SerializeField] GameObject headCube;
     private Vector3 moveDirection = Vector3.forward;
-    public bool cubeOnStage;
+   
+    
+
+
+    [Header("Variables and relevant class references for camera position arrangesments.")]
+    private Vector3 cameraPosition;
+    private DNode tmpCamera;
+    private LinkedList<Vector3> myCameraPositions;
+    private LinkedListNode<Vector3> tmp;
+    private CircularDoublyLinkedList circularCameraLocalPositions;
+    [SerializeField] private GameObject transfornCamera;
+    [SerializeField] private Camera cam2; //Second Camera for TPP View.
+    public GameObject cameraTarget; // Virtual Camera follows this gameobject.
+
+    [Header("Fine tuning")]
+    private float timeRemaining = 5;
+    public int popOnStage; //its accessor is public since it is accessed outside of the class.
+    [SerializeField] float speed = 10;
+
+
+    public bool cubeOnStage; //its public since it is accessed outside of the class.
     public int value;
-    public float timeRemaining = 10;
-    public int popOnStage = 0;
-    //public Vector3[] cameraPositions = new Vector3[] {new Vector3(0,2,-2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0), new Vector3(0, 2, -2), new Vector3(2, 2, 0), new Vector3(0, 2, 2), new Vector3(-2, 2, 0) };
-    public Vector3 cameraPosition;
-    public LinkedList<Vector3> myCameraPositions;
-    public LinkedListNode<Vector3> tmp;
-    public CircularDoublyLinkedList circularCameraLocalPositions;
-    DNode tmpCamera;
-    private int t;
-    public GameObject transfornCamera;
-    public Camera cam2;
+
     private void Awake()
     {
-        t = 1;
-
-
+        popOnStage = 0;
+        //Camera positions are appended to Circular doubly Linked list so as to switch based on orientation of the head of the CubeList.
         circularCameraLocalPositions = new CircularDoublyLinkedList(new Vector3(-2, 2, 0));
         circularCameraLocalPositions.AppendFromHead(new Vector3(0, 2, 2));
         circularCameraLocalPositions.AppendFromHead(new Vector3(2, 2, 0));
         circularCameraLocalPositions.AppendFromHead(new Vector3(0, 2, -2));
-
         tmpCamera = circularCameraLocalPositions.head;
+
+
         Debug.Log("At Awake *****" + tmpCamera.vector3D.x + " " + tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
-        cubeList = new CubeList(0, headCube);
+        cubeList = new CubeList(0, headCube); // I decided to start the game with a head that is premliminary created, so that I could make camera arrangements. Then I initialized the first object of the class.
+        
         if (instance != null)
         {
             Destroy(gameObject);
             return;
         }
         instance = this;
+        
         DontDestroyOnLoad(gameObject);
     }
 
@@ -60,86 +77,85 @@ public class Main : MonoBehaviour
 
     void Update()
     {
+        SpawnCubesToRemoveRandom();
+        SpawnCubesToPop();
+        MoveHeadOfLinkedList();
+        TranslationMethodForTail();
+        SpawnCubesToAppend();
+    }
+
+    private void SpawnCubesToRemoveRandom()
+    {
         if (timeRemaining > 0)
         {
+            Debug.Log(timeRemaining);
             timeRemaining -= Time.deltaTime;
-        } else
+        }
+        else
         {
             timeRemaining = 10;
             float Xrandom = Random.Range(-13, 13);
-            float Zrandom = Random.Range(-13, 13);
+            float Zrandom = Random.Range(-13, 13); // We made sure the spawns are on the main pitch.
             GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             randomCube.AddComponent<MeshRenderer>();
             randomCube.GetComponent<MeshRenderer>().material.color = Color.blue;
-            //randomCube.AddComponent<MeshCollider>();
-            randomCube.AddComponent<HitDetectorReverse>();
+            randomCube.AddComponent<HitDetectorRemoveRandom>();
             GameObject myText = new GameObject();
             myText.transform.SetParent(randomCube.transform);
             myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
             TextMesh textMesh = myText.AddComponent<TextMesh>();
             value = Random.Range(0, 50);
-            textMesh.text = "Reverse";
-            textMesh.fontSize = 30;
-            textMesh.color = Color.black;
+            textMesh.text = "Remove Random";
+            TextMeshConfig(textMesh);
             randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
-            cubeOnStage = true;
 
         }
+    }
 
+    
 
-        if (popOnStage <= 3)
+    private void SpawnCubesToPop()
+    {
+        if (popOnStage < 2)
         {
             float Xrandom = Random.Range(-13, 13);
             float Zrandom = Random.Range(-13, 13);
             GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //randomCube.AddComponent<MeshRenderer>();
             randomCube.GetComponent<MeshRenderer>().material.color = Color.yellow;
-            //randomCube.AddComponent<MeshCollider>();
             randomCube.AddComponent<HitDetectorPop>();
             GameObject myText = new GameObject();
             myText.transform.SetParent(randomCube.transform);
             myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
             TextMesh textMesh = myText.AddComponent<TextMesh>();
             textMesh.text = "POP";
-            textMesh.fontSize = 20;
-            textMesh.color = Color.black;
+            TextMeshConfig(textMesh);
             randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
             popOnStage++;
         }
-
-        MoveHeadOfLinkedList();
-        //AppendCubes();
-        TranslationMethodForTail();
-
-        if (!cubeOnStage)
-        {
-            float Xrandom = Random.Range(-13, 13);
-            float Zrandom = Random.Range(-13, 13);
-            GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //randomCube.AddComponent<MeshCollider>();
-            randomCube.AddComponent<HitDetector>();
-            GameObject myText = new GameObject();
-            myText.transform.SetParent(randomCube.transform);
-            myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
-            TextMesh textMesh = myText.AddComponent<TextMesh>();
-            value = Random.Range(0, 50);
-            textMesh.text = value.ToString();
-            textMesh.fontSize = 30;
-            textMesh.color = Color.black;
-            randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
-            cubeOnStage =true;
-        }
-
-
-
     }
 
+    private void SpawnCubesToAppend()
+    {
+    if (!cubeOnStage)
+    {
+        float Xrandom = Random.Range(-13, 13);
+        float Zrandom = Random.Range(-13, 13);
+        GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        randomCube.AddComponent<HitDetector>();
+        GameObject myText = new GameObject();
+        myText.transform.SetParent(randomCube.transform);
+        myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
+        TextMesh textMesh = myText.AddComponent<TextMesh>();
+        value = Random.Range(0, 50);
+        textMesh.text = value.ToString();
+        TextMeshConfig(textMesh);
+        randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
+        cubeOnStage = true;
+    }
+    }
 
     public void AppendCubesWithHit(int value)
     {
-        //if (Input.GetKeyDown("c"))
-        //{
-
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject myText = new GameObject();
         cube.transform.position = cubeList.tail.body.transform.position;
@@ -148,29 +164,19 @@ public class Main : MonoBehaviour
         myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
         TextMesh textMesh = myText.AddComponent<TextMesh>();
         textMesh.text = value.ToString();
+        TextMeshConfig(textMesh);
+    }
+
+
+    //To Avoid Repetitive Code
+    private static void TextMeshConfig(TextMesh textMesh)
+    {
+        textMesh.anchor = TextAnchor.UpperCenter; // Arrangments are made during the game, and set in script.
+        textMesh.characterSize = 0.73f; // Arrangments are made during the game, and set in script.
+        textMesh.fontStyle = FontStyle.Bold;
         textMesh.fontSize = 10;
         textMesh.color = Color.black;
-        //}
     }
-
-
-    public void AppendCubes()
-    {
-        //if (Input.GetKeyDown("c"))
-        //{
-
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            GameObject myText = new GameObject();
-            cube.transform.localPosition = new Vector3(0, 0, 0);
-            cubeList.append_cube(3, cube);
-
-            myText.transform.SetParent(cube.transform);
-            TextMesh textMesh = myText.AddComponent<TextMesh>();
-            textMesh.text = 3.ToString();
-            textMesh.color = Color.black;
-        //}
-    }
-
     private void MoveHeadOfLinkedList()
     {
         cubeList.head.body.transform.position = Vector3.MoveTowards(cubeList.head.body.transform.position, new Vector3(cubeList.head.body.transform.position.x, cubeList.head.body.transform.position.y, cubeList.head.body.transform.position.z) + moveDirection, 0.1f);
@@ -192,7 +198,7 @@ public class Main : MonoBehaviour
             //transfornCamera.transform.rotation = Quaternion.LookRotation(moveDirection);
 
             //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[t]);
-            t++;
+            //t++;
         }
 
         if (Input.GetKeyDown("d"))
@@ -208,11 +214,18 @@ public class Main : MonoBehaviour
             transfornCamera.transform.DOLookAt(moveDirection, 1);
             //transfornCamera.transform.rotation = Quaternion.LookRotation(moveDirection);
             //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[jj]);
-            t--;
+            //t--;
             //cameraTarget.transform.RotateAround(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), 90);
 
         }
 
+
+        if (Input.GetKeyDown("r"))
+        {
+            int del = Random.Range(1, cubeList.length-1);
+            delete_gameobject(cubeList, del);
+            Debug.Log("Deleted");
+        }
 
 
         if (Input.GetKey("l"))
@@ -255,50 +268,10 @@ public class Main : MonoBehaviour
         list.pop_cube();
     }
 
-
-    public void pop_firstgameobject(CubeList list)
-    {
-        Destroy(list.head.body);
-        list.pop_first_cube();
-    }
-
     public void delete_gameobject(CubeList list, int ind)
     {
         Destroy(list.get_cube(ind).body);
         list.remove_cube(ind);
     }
-
-
-    public void refreshColor(CubeList list)
-    {
-        Cube tmp = list.head;
-        while (tmp.next != null)
-        {
-            tmp.body.GetComponent<MeshRenderer>().material.color = Color.white;
-            list.head.body.GetComponent<MeshRenderer>().material.color = Color.green;
-            list.tail.body.GetComponent<MeshRenderer>().material.color = Color.blue;
-            tmp = tmp.next;
-        }
-    }
-
-
-
-
-    public CubeList reverseList(CubeList list)
-    {
-        Cube before = null;
-        Cube tmp = list.head;
-        reverseWRecursion_helper(tmp, before);
-        return list;
-    }
-    public Cube reverseWRecursion_helper(Cube node_tmp, Cube node_before)
-    {
-        if (node_tmp == null)
-            return node_before;
-        Cube after = node_tmp.next;
-        return reverseWRecursion_helper(after, node_tmp);
-    }
-
-
-
+  
 }
