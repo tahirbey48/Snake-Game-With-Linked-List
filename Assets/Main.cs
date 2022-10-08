@@ -19,11 +19,13 @@ public class Main : MonoBehaviour
     
     public CubeList cubeList;
     
-    [SerializeField] GameObject headCube;
+    [SerializeField] GameObject headCube; //head node, initialize the linkedlist with this nead not as the body part of the first Node.
+    //starting direction of head movement
     private Vector3 moveDirection = Vector3.forward;
-   
-    
 
+    [SerializeField] GameObject CubeToSpawnPrefab;
+    [SerializeField] GameObject popPrefab;
+    [SerializeField] GameObject removePrefab;
 
     [Header("Variables and relevant class references for camera position arrangesments.")]
     private Vector3 cameraPosition;
@@ -55,7 +57,6 @@ public class Main : MonoBehaviour
         tmpCamera = circularCameraLocalPositions.head;
 
 
-        Debug.Log("At Awake *****" + tmpCamera.vector3D.x + " " + tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
         cubeList = new CubeList(0, headCube); // I decided to start the game with a head that is premliminary created, so that I could make camera arrangements. Then I initialized the first object of the class.
         
         if (instance != null)
@@ -96,15 +97,14 @@ public class Main : MonoBehaviour
             timeRemaining = 10;
             float Xrandom = Random.Range(-13, 13);
             float Zrandom = Random.Range(-13, 13); // We made sure the spawns are on the main pitch.
-            GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            randomCube.AddComponent<MeshRenderer>();
-            randomCube.GetComponent<MeshRenderer>().material.color = Color.blue;
+            GameObject randomCube = Instantiate(removePrefab);
+            randomCube.AddComponent<BoxCollider>();
             randomCube.AddComponent<HitDetectorRemoveRandom>();
             GameObject myText = new GameObject();
             myText.transform.SetParent(randomCube.transform);
             myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
             TextMesh textMesh = myText.AddComponent<TextMesh>();
-            value = Random.Range(0, 50);
+            //value = Random.Range(32458, 50008);
             textMesh.text = "Remove Random";
             TextMeshConfig(textMesh);
             randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
@@ -120,8 +120,9 @@ public class Main : MonoBehaviour
         {
             float Xrandom = Random.Range(-13, 13);
             float Zrandom = Random.Range(-13, 13);
-            GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            randomCube.GetComponent<MeshRenderer>().material.color = Color.yellow;
+            GameObject randomCube = Instantiate(popPrefab);
+            randomCube.AddComponent<BoxCollider>();
+            //GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             randomCube.AddComponent<HitDetectorPop>();
             GameObject myText = new GameObject();
             myText.transform.SetParent(randomCube.transform);
@@ -140,13 +141,15 @@ public class Main : MonoBehaviour
     {
         float Xrandom = Random.Range(-13, 13);
         float Zrandom = Random.Range(-13, 13);
-        GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject randomCube = Instantiate(CubeToSpawnPrefab);
+        //GameObject randomCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        randomCube.AddComponent<BoxCollider>();
         randomCube.AddComponent<HitDetector>();
         GameObject myText = new GameObject();
         myText.transform.SetParent(randomCube.transform);
         myText.transform.localPosition = new Vector3(-0.342999995f, 1.49800003f, 0.150999993f);
         TextMesh textMesh = myText.AddComponent<TextMesh>();
-        value = Random.Range(0, 50);
+        value = Random.Range(32245, 50008);
         textMesh.text = value.ToString();
         TextMeshConfig(textMesh);
         randomCube.transform.position = new Vector3(Xrandom, 0.66f, Zrandom);
@@ -156,7 +159,8 @@ public class Main : MonoBehaviour
 
     public void AppendCubesWithHit(int value)
     {
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject cube = Instantiate(CubeToSpawnPrefab);
         GameObject myText = new GameObject();
         cube.transform.position = cubeList.tail.body.transform.position;
         cubeList.append_cube(value, cube);
@@ -179,26 +183,18 @@ public class Main : MonoBehaviour
     }
     private void MoveHeadOfLinkedList()
     {
-        cubeList.head.body.transform.position = Vector3.MoveTowards(cubeList.head.body.transform.position, new Vector3(cubeList.head.body.transform.position.x, cubeList.head.body.transform.position.y, cubeList.head.body.transform.position.z) + moveDirection, 0.1f);
+        //cubeList.head.body.transform.position = Vector3.MoveTowards(cubeList.head.body.transform.position, new Vector3(cubeList.head.body.transform.position.x, cubeList.head.body.transform.position.y, cubeList.head.body.transform.position.z) + moveDirection, 0.1f);
+        cubeList.head.body.transform.position = Vector3.MoveTowards(cubeList.head.body.transform.position, cubeList.head.body.transform.position + moveDirection, 0.1f);
 
         if (Input.GetKeyDown("a"))
         {
-            
             float a = moveDirection.x;
             float b = moveDirection.y;
             float c = moveDirection.z;
             moveDirection = new Vector3(-c, b, a);
-            //cameraTarget.transform.RotateAround(cubeList.head.body.transform.position, Vector3.Cross(moveDirection,Vector3.right),-90);
-            //Debug.DrawRay(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), Color.green,100);
             tmpCamera = tmpCamera.next;
-            Debug.Log("*****" + tmpCamera.vector3D.x + " " + tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
-            //cameraTarget.transform.localPosition = tmpCamera.vector3D;
             cameraTarget.transform.DOLocalMove(tmpCamera.vector3D,1);
             transfornCamera.transform.DOLookAt(moveDirection, 1);
-            //transfornCamera.transform.rotation = Quaternion.LookRotation(moveDirection);
-
-            //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[t]);
-            //t++;
         }
 
         if (Input.GetKeyDown("d"))
@@ -208,15 +204,8 @@ public class Main : MonoBehaviour
             float c = moveDirection.z;
             moveDirection = new Vector3(c, b, -a);
             tmpCamera = tmpCamera.prev;
-            Debug.Log("*****" + tmpCamera.vector3D.x + " "+ tmpCamera.vector3D.y + " " + tmpCamera.vector3D.z + "******");
-            //cameraTarget.transform.localPosition = tmpCamera.vector3D;
             cameraTarget.transform.DOLocalMove(tmpCamera.vector3D, 1);
             transfornCamera.transform.DOLookAt(moveDirection, 1);
-            //transfornCamera.transform.rotation = Quaternion.LookRotation(moveDirection);
-            //Debug.Log("jj is  " + jj + "  Position is  " + cameraPositions[jj]);
-            //t--;
-            //cameraTarget.transform.RotateAround(cubeList.head.body.transform.position, Vector3.Cross(moveDirection, Vector3.right), 90);
-
         }
 
 

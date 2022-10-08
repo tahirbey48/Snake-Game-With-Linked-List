@@ -1,9 +1,12 @@
 /Library/
+/Assets/Materials/
+/Assets/SnowAssets/
 /Assets/DOTween/
 /Assets/Resources/
 /Assets/*.meta/
 /Assets/*.cs.meta/
 /Assets/Scenes/*.unity.meta
+/Assets/Prefabs/
 /Temp/
 /obj/
 /Packages/
@@ -12,6 +15,8 @@
 /Recordings/
 /ProjectSettings/
 /Assets/spritefont_and_other/
+
+*.meta
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
