@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class HitDetectorPop : MonoBehaviour
 {
+    [SerializeField] private string _popCube;
     // Start is called before the first frame update
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Head")
+        if (collision.gameObject.CompareTag(_popCube))
         {
-            Destroy(this.gameObject);
+            Destroy(collision.gameObject);
             Main.instance.pop_gameobject(Main.instance.cubeList);
             Main.instance.popOnStage--;
         }
